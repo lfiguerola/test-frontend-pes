@@ -7,7 +7,7 @@ namespace MeltingApp.Models
     public class User : EntityBase
     {
         /// <summary>
-        /// the user name
+        /// the user name in format alphanumerical
         /// </summary>
         public string username
         {
@@ -59,7 +59,7 @@ namespace MeltingApp.Models
         }
 
         /// <summary>
-        /// 
+        /// code for an user activation 
         /// </summary>
         public string code
         {

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MeltingApp.Exceptions;
 using MeltingApp.Models;
+using MeltingApp.Resources;
 using Newtonsoft.Json;
 using Xamarin.Forms;
 
@@ -21,8 +22,8 @@ namespace MeltingApp.Services
 
         public Dictionary<Tuple<Type, string>, string> UrlPostDictionary { get; set; } = new Dictionary<Tuple<Type, string>, string>
         {
-            {new Tuple<Type, string>(typeof(User), "Activate"), "/activate" },
-            {new Tuple<Type, string>(typeof(User), "Register"), "/register" },
+            {new Tuple<Type, string>(typeof(User), ApiRoutes.ActivateUserMethodName), ApiRoutes.ActivateUserPath },
+            {new Tuple<Type, string>(typeof(User), ApiRoutes.RegisterUserMethodName), ApiRoutes.RegisterUserPath },
         };
 
         public Dictionary<Type, string> UrlPutDictionary { get; set; } = new Dictionary<Type, string>()
@@ -55,6 +56,7 @@ namespace MeltingApp.Services
                     return JsonConvert.DeserializeObject<T>(await result.Content.ReadAsStringAsync()); //deserializamos nuestro postResult a <T> con JSONConvert y retornamos el resultado
 
                 }
+                //si codis d'error
                 DependencyService.Get<IOperatingSystemMethods>().ShowToast(postResult);//Show Toast del postResult en caso de fallo
                 throw new ApiClientException(postResult);//throw excepcion de la excepcion q toque con el mensaje q trae el resultado
             }
@@ -63,12 +65,8 @@ namespace MeltingApp.Services
                 DependencyService.Get<IOperatingSystemMethods>().ShowToast($"An error has ocurred creating {typeof(T)}. Check internet connection.");
             }
 
-            if (result == null) return null;
+            //if (result == null) return null;
 
-            if (result.IsSuccessStatusCode)
-            {
-                return JsonConvert.DeserializeObject<T>(await result.Content.ReadAsStringAsync());
-            }
             //TODO: null or throw custom exception like PostException
             return null;
 
