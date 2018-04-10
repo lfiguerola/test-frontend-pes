@@ -15,9 +15,10 @@ namespace MeltingApp.Droid
 {
     class OperatingSystemMethods : IOperatingSystemMethods
     {
+         
         public void ShowToast(string text)
         {
-            //com esta fora de la main activity hem de buscar el context 
+            //com esta fora de la main activity hem de buscar el context
             Toast.MakeText(Android.App.Application.Context, text, ToastLength.Long).Show();
         }
     }
