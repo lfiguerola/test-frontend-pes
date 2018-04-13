@@ -41,31 +41,33 @@ namespace MeltingApp.Services
             
         };
 
-        public async Task<T> PostAsync<T>(T entity, string methodName) where T : EntityBase
+        public async Task<T> PostAsync<T>(T entity, string methodName, Action<bool, string> successResultCallback = null) where T : EntityBase
         {
             var json = JsonConvert.SerializeObject(entity);
             HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
             HttpResponseMessage result = null;
+            string postResult = null; 
             try
             {
                 result = await HttpClient.PostAsync(new Uri(GetPostUri<T>(methodName)), content);
-                var postResult = await result.Content.ReadAsStringAsync();
-                //if para contemplar errores,
-                if (result.IsSuccessStatusCode) //si codis 20X ---- OK
+                postResult = await result.Content.ReadAsStringAsync();
+                var deserializedObject = JsonConvert.DeserializeObject<T>(postResult);
+                if (result.IsSuccessStatusCode)
                 {
-                    DependencyService.Get<IOperatingSystemMethods>().ShowToast(postResult);
-                    return JsonConvert.DeserializeObject<T>(await result.Content.ReadAsStringAsync()); //deserializamos nuestro postResult a <T> con JSONConvert y retornamos el resultado
+                    string responseMessage = null;
+                    if (deserializedObject == null)
+                    {
+                        responseMessage = postResult;
+                    }
+                    successResultCallback?.Invoke(true, responseMessage);
                 }
-                //DependencyService.Get<IOperatingSystemMethods>().ShowToast(postResult);//Show Toast del postResult en caso de fallo
-                throw new ApiClientException(postResult);//throw excepcion de la excepcion q toque con el mensaje q trae el resultado
+                else successResultCallback?.Invoke(false, postResult);
+                return deserializedObject;
             }
-            catch (ApiClientException) //pillem l'excepcio si els codis no son OK
+            catch (Exception)
             {
+                throw new ApiClientException(postResult);
             }
-
-         //TODO: null or throw custom exception like PostException
-            return null;
-
         }
 
         //public async Task<bool?> DeleteAsync<T>(T entity) where T : EntityBase
