@@ -10,8 +10,8 @@ namespace MeltingApp.Views.Pages
 		public LoginPage ()
 		{
 			InitializeComponent ();
-            NavigationPage.SetHasNavigationBar(this, false);
-            BindingContext = new LoginViewModel();            
+            NavigationPage.SetHasNavigationBar(this, false);    
+            BindingContext = new AuthViewModel();
 		}
 	}
 }
